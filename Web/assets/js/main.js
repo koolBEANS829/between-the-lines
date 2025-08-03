@@ -132,7 +132,7 @@ $(document).ready(function() {
     }
 
     async function predict(imageData) {
-        const model = await tf.loadModel('/model/model.json');
+        const model = await tf.loadModel('./model/model.json');
         var data = reshapeImageData(imageData);
         data = data.map( x => { return x / 255} )
         //console.log(data)
