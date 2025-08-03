@@ -54,6 +54,15 @@ analyzeBtn.addEventListener('click', analyzeHandwriting);
 dropArea.addEventListener('dragover', handleDragOver);
 dropArea.addEventListener('drop', handleDrop);
 
+// Handle camera modal close event
+document.getElementById('cameraModal').addEventListener('hidden.bs.modal', function () {
+    // Stop all tracks in the stream
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+});
+
 // Handle file selection via browse button
 function handleFileSelect(e) {
     if (e.target.files.length > 0) {
@@ -327,12 +336,40 @@ async function predictWithModel(imageData) {
 
 // Open camera for capturing image
 async function openCamera() {
+    // Check if we're on a secure context (HTTPS)
+    if (!window.isSecureContext) {
+        alert('Camera access requires a secure connection (HTTPS). Please ensure you are accessing this site via HTTPS.');
+        cameraInput.click(); // Fallback to file input
+        return;
+    }
+    
     try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        // Request camera access
+        stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: 'environment',
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            } 
+        });
+        
+        // Set the video stream
         cameraStream.srcObject = stream;
+        
+        // Show the camera modal
         cameraModal.show();
     } catch (error) {
         console.error('Error accessing camera:', error);
+        
+        // Handle different error types
+        if (error.name === 'NotAllowedError') {
+            alert('Camera access was denied. Please allow camera access in your browser settings.');
+        } else if (error.name === 'NotFoundError' || error.name === 'OverconstrainedError') {
+            alert('No camera found or camera not supported.');
+        } else {
+            alert('Error accessing camera: ' + error.message);
+        }
+        
         // Fallback to file input if camera is not available
         cameraInput.click();
     }
