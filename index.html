@@ -57,9 +57,31 @@
                                 <i class="fas fa-cloud-upload-alt fa-3x text-white-50 mb-3"></i>
                                 <h4 class="text-white">Drag & Drop your image here</h4>
                                 <p class="text-white-50">or</p>
-                                <button class="btn btn-light btn-lg" id="browseBtn">Browse Files</button>
+                                <button class="btn btn-light btn-lg me-2" id="browseBtn">Browse Files</button>
+                                <button class="btn btn-light btn-lg" id="cameraBtn">Use Camera</button>
                             </div>
                             <input type="file" id="fileInput" accept="image/*" class="d-none">
+                            <input type="file" id="cameraInput" accept="image/*" capture="environment" class="d-none">
+                            
+                            <!-- Camera capture modal -->
+                            <div class="modal fade" id="cameraModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Capture Handwriting</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                            <video id="cameraStream" autoplay playsinline class="w-100 rounded"></video>
+                                            <canvas id="cameraCanvas" class="d-none"></canvas>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-primary" id="captureBtn">Capture</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="text-center mt-3">
                             <button class="btn btn-primary btn-lg" id="analyzeBtn" disabled>

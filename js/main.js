@@ -7,11 +7,23 @@ window.Tesseract = Tesseract.create({
 
 // DOM elements
 const fileInput = document.getElementById('fileInput');
+const cameraInput = document.getElementById('cameraInput');
 const browseBtn = document.getElementById('browseBtn');
+const cameraBtn = document.getElementById('cameraBtn');
 const dropArea = document.getElementById('dropArea');
 const analyzeBtn = document.getElementById('analyzeBtn');
 const analyzeSpinner = document.getElementById('analyzeSpinner');
 const resultsCard = document.getElementById('resultsCard');
+
+// Camera elements
+const cameraModal = new bootstrap.Modal(document.getElementById('cameraModal'));
+const cameraStream = document.getElementById('cameraStream');
+const cameraCanvas = document.getElementById('cameraCanvas');
+const captureBtn = document.getElementById('captureBtn');
+
+let selectedFile = null;
+let processing = false;
+let stream = null;
 
 // OCR result elements
 const ocrProgress = document.getElementById('ocrProgress');
@@ -34,7 +46,10 @@ let processing = false;
 
 // Event listeners
 browseBtn.addEventListener('click', () => fileInput.click());
+cameraBtn.addEventListener('click', openCamera);
 fileInput.addEventListener('change', handleFileSelect);
+cameraInput.addEventListener('change', handleFileSelect);
+captureBtn.addEventListener('click', captureImage);
 analyzeBtn.addEventListener('click', analyzeHandwriting);
 dropArea.addEventListener('dragover', handleDragOver);
 dropArea.addEventListener('drop', handleDrop);
@@ -308,4 +323,39 @@ async function predictWithModel(imageData) {
         graphologyText.textContent = "Error during analysis: " + error.message;
         graphologyProb.textContent = "N/A";
     }
+}
+
+// Open camera for capturing image
+async function openCamera() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        cameraStream.srcObject = stream;
+        cameraModal.show();
+    } catch (error) {
+        console.error('Error accessing camera:', error);
+        // Fallback to file input if camera is not available
+        cameraInput.click();
+    }
+}
+
+// Capture image from camera
+function captureImage() {
+    // Set canvas dimensions to match video
+    cameraCanvas.width = cameraStream.videoWidth;
+    cameraCanvas.height = cameraStream.videoHeight;
+    
+    // Draw video frame to canvas
+    const ctx = cameraCanvas.getContext('2d');
+    ctx.drawImage(cameraStream, 0, 0, cameraCanvas.width, cameraCanvas.height);
+    
+    // Convert to blob and create file object
+    cameraCanvas.toBlob(blob => {
+        const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
+        selectedFile = file;
+        analyzeBtn.disabled = false;
+        
+        // Stop camera stream
+        stream.getTracks().forEach(track => track.stop());
+        cameraModal.hide();
+    }, 'image/jpeg');
 }
