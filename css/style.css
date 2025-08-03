@@ -1,0 +1,44 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+.card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.upload-area {
+    cursor: pointer;
+}
+
+.upload-area.bg-primary {
+    background: rgba(0, 123, 255, 0.2) !important;
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to right, #2575fc, #6a11cb);
+}
+
+.progress {
+    height: 20px;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+}
+
+#imgCanvas {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
